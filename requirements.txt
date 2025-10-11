@@ -1,6 +1,0 @@
-numpy
-meshio
-pyvista
-jupyter
-ipywidgets
-trame
