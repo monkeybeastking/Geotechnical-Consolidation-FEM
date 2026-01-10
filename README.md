@@ -1,24 +1,22 @@
-# Finite Element Analysis methods in solving for geotechnical settlement / pore presusre 
+# Finite Element Analysis methods in solving geotechnical settlement / pore pressure
 
+## Project Purpose and Description
+Fundamentally, the two governing equations related to consolidation settlement are the **Terzaghi** partial differential equation (heat/diffusion equation) and the **Biot consolidation theory** PDE system.
 
-Project Purpose and Descriptions
-Fundermentally the two governing equation related to consolidation settlement is namely Terazaghi PDE (Heat or Diffusion Equastion) or Biot Consolidation Thoery PDE. 
-- Terazaghi theory only considers virtical drainage and thus moving from 1d terazaghi to 2d terazaghi doesnt necessarily and more complexity nor purpose other than loads and stress in soils can become mnore tedious.
-- Biot Consolidation theory is a coupled PDE system. This has not as of yet been solved by myself. 
+- **Terzaghi theory** only considers vertical drainage. As a result, extending from 1D Terzaghi to 2D Terzaghi does not necessarily add meaningful complexity or purpose, other than accounting for more tedious loading and stress distributions in soil.
+- **Biot consolidation theory** is a coupled PDE system. This has not yet been solved within this project.
 
+## FEniCS / DOLFINx
+When using FEniCS, you can work either with Docker or Conda.
 
-FEniCS / Dolfinx / 
-in using FEniCS, you can either use docker or Conda.
-- Docker files provided here allow you to use this program and either vscode or whatever other IDE to work with the FEniCS library without causing issue. However several errors and incorrect version are not currently are within this file so it is prefered to use conda (look at FEniCS workshop they provide a conda file in which is usefull).
-- Conda (prefeered method) 
+- **Docker**: Docker files are provided to allow use of this project with VS Code or other IDEs while avoiding local installation issues with the FEniCS library. However, several errors and version mismatches currently exist in these files, so this method is not recommended at present.
+- **Conda (preferred method)**: It is recommended to use Conda. The official FEniCS workshops provide a Conda environment file, which is more reliable and easier to maintain.
 
-.src:
-- 1D Terazaghi consolidation analysis. This also compared the FEM model with the analytical solution to get the error.
-- Biot Consolidation settlement (yet to be done)
+## src/
+- **1D Terzaghi consolidation analysis**: Includes comparison between the FEM solution and the analytical solution, along with error evaluation.
+- **Biot consolidation settlement**: Not yet implemented.
 
-
-
-References:
-FEnicsX: https://jsdokken.com/dolfinx-tutorial/chapter2/heat_equation.html
-Paraview: https://www.paraview.org/download/
-numpy: https://numpy.org/doc/stable/user/absolute_beginners.html 
+## References
+- FEniCSx tutorial: https://jsdokken.com/dolfinx-tutorial/chapter2/heat_equation.html  
+- ParaView: https://www.paraview.org/download/  
+- NumPy documentation: https://numpy.org/doc/stable/user/absolute_beginners.html
