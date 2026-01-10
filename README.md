@@ -6,6 +6,9 @@ Fundamentally, the two governing equations related to consolidation settlement a
 - **Terzaghi theory** only considers vertical drainage. As a result, extending from 1D Terzaghi to 2D Terzaghi does not necessarily add meaningful complexity or purpose, other than accounting for more tedious loading and stress distributions in soil.
 - **Biot consolidation theory** is a coupled PDE system. This has not yet been solved within this project.
 
+**Note:** The current 1D Terzaghi consolidation implementation does **not** use FEniCSx. It is implemented using standard Python tools (e.g. NumPy/Pandas) to allow transparent comparison with the analytical solution and explicit error evaluation.  
+FEniCSx is used at a basic level and will be progressively introduced in more advanced cases, such as coupled Biot consolidation or multi-layer Terzaghi consolidation.
+
 ## FEniCS / DOLFINx
 When using FEniCS, you can work either with Docker or Conda.
 
@@ -13,10 +16,14 @@ When using FEniCS, you can work either with Docker or Conda.
 - **Conda (preferred method)**: It is recommended to use Conda. The official FEniCS workshops provide a Conda environment file, which is more reliable and easier to maintain.
 
 ## src/
-- **1D Terzaghi consolidation analysis**: Includes comparison between the FEM solution and the analytical solution, along with error evaluation.
+- **1D Terzaghi consolidation analysis**: Implemented using standard Python tools (NumPy/Pandas), including comparison between the FEM solution and the analytical solution with error evaluation.
 - **Biot consolidation settlement**: Not yet implemented.
 
-## References
-- FEniCSx tutorial: https://jsdokken.com/dolfinx-tutorial/chapter2/heat_equation.html  
-- ParaView: https://www.paraview.org/download/  
-- NumPy documentation: https://numpy.org/doc/stable/user/absolute_beginners.html
+### Project structure
+```text
+.
+├── src/
+│   ├── terzaghi_1d/
+│   └── biot/        (planned)
+├── .devcontainer/  (optional)
+└── README.md
