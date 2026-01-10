@@ -6,8 +6,7 @@ Fundamentally, the two governing equations related to consolidation settlement a
 - **Terzaghi theory** only considers vertical drainage. As a result, extending from 1D Terzaghi to 2D Terzaghi does not necessarily add meaningful complexity or purpose, other than accounting for more tedious loading and stress distributions in soil.
 - **Biot consolidation theory** is a coupled PDE system. This has not yet been solved within this project.
 
-**Note:** The current 1D Terzaghi consolidation implementation does **not** use FEniCSx. It is implemented using standard Python tools (e.g. NumPy/Pandas) to allow transparent comparison with the analytical solution and explicit error evaluation.  
-FEniCSx is used at a basic level and will be progressively introduced in more advanced cases, such as coupled Biot consolidation or multi-layer Terzaghi consolidation.
+**Note:** The current 1D Terzaghi consolidation implementation does **not** use FEniCSx. Since the 1D Terazaghi partial differentrial equation is a simple diffusion differential equation by nature, an implemention using **only** using numpy has been undertaken. For more complex, or multi level / layer geology FEniCS have been incorporated. FEniCSx will be progressively introduced in more advanced cases, such as coupled Biot consolidation or multi-layer Terzaghi consolidation.
 
 ## FEniCS / DOLFINx
 When using FEniCS, you can work either with Docker or Conda.
