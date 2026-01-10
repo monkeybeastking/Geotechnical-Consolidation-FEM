@@ -1,11 +1,21 @@
-# numerical solving methods using python for geotechnical practise 
+# Finite Element Analysis methods in solving for geotechnical settlement / pore presusre 
+
 
 Project Purpose and Descriptions
+Fundermentally the two governing equation related to consolidation settlement is namely Terazaghi PDE (Heat or Diffusion Equastion) or Biot Consolidation Thoery PDE. 
+- Terazaghi theory only considers virtical drainage and thus moving from 1d terazaghi to 2d terazaghi doesnt necessarily and more complexity nor purpose other than loads and stress in soils can become mnore tedious.
+- Biot Consolidation theory is a coupled PDE system. This has not as of yet been solved by myself. 
 
-Dolfinx
-A Docker based FEniCSx environment prepared for developing and testing finite-element PDE solvers has been created. this potentially will change into a virtual machine to use instead to prevent any potential clashing. However a docker file has been incorporated.
 
-.src - Are my written code from myself (via the bad coding and weird style seen)
+FEniCS / Dolfinx / 
+in using FEniCS, you can either use docker or Conda.
+- Docker files provided here allow you to use this program and either vscode or whatever other IDE to work with the FEniCS library without causing issue. However several errors and incorrect version are not currently are within this file so it is prefered to use conda (look at FEniCS workshop they provide a conda file in which is usefull).
+- Conda (prefeered method) 
+
+.src:
+- 1D Terazaghi consolidation analysis. This also compared the FEM model with the analytical solution to get the error.
+- Biot Consolidation settlement (yet to be done)
+
 
 
 References:
