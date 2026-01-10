@@ -1,4 +1,4 @@
-# Finite Element Analysis methods in solving geotechnical settlement / pore pressure
+# Finite Element Analysis methods in solving geotechnical displacement / pore pressure
 
 ## Project Purpose and Description
 Fundamentally, the two governing equations related to consolidation settlement are the **Terzaghi** partial differential equation (heat/diffusion equation) and the **Biot consolidation theory** PDE system.
