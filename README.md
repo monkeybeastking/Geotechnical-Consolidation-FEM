@@ -1,28 +1,59 @@
-# Finite Element Analysis methods in solving geotechnical displacement / pore pressure
+# Finite Element Methods for Geotechnical Consolidation (Pore Pressure & Settlement)
 
-## Project Purpose and Description
-Fundamentally, the two governing equations related to consolidation settlement are the **Terzaghi** partial differential equation (heat/diffusion equation) and the **Biot consolidation theory** PDE system.
+## Overview
+This repository explores numerical methods for geotechnical consolidation, focusing on:
+- **Terzaghi 1D consolidation** (diffusion PDE for excess pore pressure)
+- **Biot consolidation** (coupled displacement–pore pressure system, planned)
 
-- **Terzaghi theory** only considers vertical drainage. As a result, extending from 1D Terzaghi to 2D Terzaghi does not necessarily add meaningful complexity or purpose, other than accounting for more tedious loading and stress distributions in soil.
-- **Biot consolidation theory** is a coupled PDE system. This has not yet been solved within this project.
+The goal is to build **verified, reproducible implementations** that can be extended to:
+layered soils, spatially varying parameters, and eventually coupled consolidation.
 
-**Note:** The current 1D Terzaghi consolidation implementation does **not** use FEniCSx. Since the 1D Terazaghi partial differentrial equation is a simple diffusion differential equation by nature, an implemention using **only** using numpy has been undertaken. For more complex, or multi level / layer geology FEniCS have been incorporated. FEniCSx will be progressively introduced in more advanced cases, such as coupled Biot consolidation or multi-layer Terzaghi consolidation.
+---
 
-## FEniCS / DOLFINx
-When using FEniCS, you can work either with Docker or Conda.
+## What’s implemented
+### Terzaghi 1D consolidation (working)
+- Finite difference / FEM-style discretisation using **NumPy** (lightweight + fast to iterate)
+- **Analytical solution comparison** for verification
+- Basic error evaluation (e.g., RMSE / L2-style measures)
 
-- **Docker**: Docker files are provided to allow use of this project with VS Code or other IDEs while avoiding local installation issues with the FEniCS library. However, several errors and version mismatches currently exist in these files, so this method is not recommended at present.
-- **Conda (preferred method)**: It is recommended to use Conda. The official FEniCS workshops provide a Conda environment file, which is more reliable and easier to maintain.
+> Note: 1D Terzaghi is implemented without FEniCSx on purpose.  
+> The core PDE is simple enough to verify cleanly in NumPy first, then scale up to more complex cases.
 
-## src/
-- **1D Terzaghi consolidation analysis**: Implemented using standard Python tools (NumPy/Pandas), including comparison between the FEM solution and the analytical solution with error evaluation.
-- **Biot consolidation settlement**: Not yet implemented.
+---
 
-### Project structure
+## What’s planned (Roadmap)
+### Terzaghi extensions
+- [ ] Layered soils (piecewise parameters by depth, e.g., \(c_v(z)\), \(m_v(z)\))
+- [ ] More boundary/loading cases (drainage conditions, staged loading)
+
+### Biot consolidation
+- [ ] Biot 1D (coupled \(u\)-\(p\) formulation)
+- [ ] Biot 2D using **FEniCSx/DOLFINx** (mixed formulation)
+
+---
+
+## Verification philosophy
+Numerical results are checked against known solutions and basic sanity checks:
+- Analytical vs numerical comparison (Terzaghi 1D)
+- Error trends with refinement (mesh/time-step sensitivity where applicable)
+
+(As the project expands, verification scripts/results will be added and standardised.)
+
+---
+
+## FEniCSx / DOLFINx environment
+For FEniCSx-based problems (planned), two approaches are included:
+
+- **Conda (recommended):** more reliable and easier to maintain for most users
+- **Docker (optional):** useful to avoid local installs, but currently may require fixes due to version mismatch issues
+
+---
+
+## Project structure
 ```text
 .
 ├── src/
-│   ├── terzaghi_1d/
-│   └── biot/        (planned)
-├── .devcontainer/  (optional)
+│   ├── terzaghi_1d/      # 1D consolidation (NumPy-based, verified vs analytical)
+│   └── biot/             # planned: coupled consolidation
+├── .devcontainer/        # optional development container setup
 └── README.md
