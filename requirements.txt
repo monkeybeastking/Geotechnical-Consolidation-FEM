@@ -1,0 +1,9 @@
+numpy
+pandas
+streamlit
+matplotlib
+mpi4py
+petsc4py
+seaborn
+petsc4py
+pyvista

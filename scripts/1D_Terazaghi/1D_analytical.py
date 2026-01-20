@@ -35,14 +35,3 @@ cdata = terzaghi(H, Tx, time_step, nodes, Cv)
 cdata = 1 - cdata
 print(cdata)
 Z = -np.linspace(0, H, nodes)
-
-
-plt.plot(cdata[0, :], Z, label = f"Day 0 (Tv={time_factor:.4f})")
-plt.plot(cdata[int(time_step/3), :],Z, label= f"day 50 (Tv={time_factor:.4f})")
-plt.plot(cdata[int(time_step/3), :],Z, label= f"day 100 (Tv={time_factor:.4f})")
-plt.plot(cdata[(time_step-1), :],Z, label= f"day 150 (Tv={time_factor:.4f})")
-plt.legend()
-plt.xlabel("degree of consolidation")
-plt.ylabel("Depth (m)")
-plt.title("Pore Pressure vs Depth")
-plt.show()
