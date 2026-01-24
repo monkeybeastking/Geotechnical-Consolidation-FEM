@@ -1,4 +1,5 @@
 FROM dolfinx/dolfinx:stable
+# add stable exact code 
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
