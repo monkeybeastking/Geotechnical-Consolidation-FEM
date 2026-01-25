@@ -77,14 +77,3 @@ def Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv):
 
     return data
 
-
-if __name__ == "__main__":
-    H = 5
-    num = 100
-    P = 100
-    Tx = 60*60*24*150
-    time_step = 100
-    Cv = 2e-7
-
-    p = Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv)
-    print(p)
