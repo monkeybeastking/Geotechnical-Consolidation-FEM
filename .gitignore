@@ -1,2 +1,6 @@
 # so far nothing in here 
 notes/ 
+
+
+# ignore all pyache
+**/__pycache__/
