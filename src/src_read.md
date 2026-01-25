@@ -1,2 +1,0 @@
-- **1D Terzaghi consolidation analysis**: Implemented using standard Python tools (NumPy/Pandas) rather than FEniCSx, allowing clear comparison with the analytical solution and explicit error evaluation.
-- **FEniCSx usage**: Currently used at a basic level. More advanced FEniCSx implementations are planned for coupled Biot consolidation and multi-layer Terzaghi problems.

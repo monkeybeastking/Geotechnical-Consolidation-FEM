@@ -1,16 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-H = 5
-num = 100
-nodes = num + 1
-P = 100
-Tx = 60*60*24*150
-time_step = 100
-dt = Tx / time_step
-Cv = 2e-7
-
-time_factor = (Cv * dt) / H**2
 
 def create_local(Cv, Z):
     he = np.diff(Z)
@@ -24,7 +14,6 @@ def create_local(Cv, Z):
     else:
         print("ERROR - 'he' not uniform")
 
-
 def create_global(Matrix, num_nodes):
     num_nodes = int(num_nodes)
     Global_M = np.zeros((num_nodes,num_nodes))
@@ -34,14 +23,12 @@ def create_global(Matrix, num_nodes):
         Global_M[i : (i+2), i : (i+2)] += Matrix
     return Global_M
 
-
 def boundary_conditions(LF, nodes):
     p = 0
     LF[:,p] = 0
     LF[p,:] = 0
     LF[p,p] = 1
     return LF
-
 
 def solve_timestep(GMe, B, U0, time_step, nodes):
     p = 0
@@ -72,33 +59,32 @@ def solve_timestep(GMe, B, U0, time_step, nodes):
             Un1 = Un1.reshape(-1, 1).T
             data = np.concatenate((data,Un1), axis=0)
     return data
-        
-    
+          
+
+def Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv):
+    nodes = num + 1
+    dt = Tx / time_step
+
+    Z = -np.linspace(0, H, num = nodes)
+    U0 = P*np.ones(Z.shape, dtype=float)
+
+    Me, Ke = create_local(Cv, Z)
+    GMe, GKe = create_global(Me, nodes), create_global(Ke, nodes)
+    bilinear_form = (GMe) + (dt * GKe)
+
+    B = boundary_conditions(bilinear_form, nodes)
+    data = solve_timestep(GMe, B, U0, time_step, nodes)
+
+    return data
 
 
-Z = -np.linspace(0, H, num = nodes)
-U0 = P*np.ones(Z.shape, dtype=float)
+if __name__ == "__main__":
+    H = 5
+    num = 100
+    P = 100
+    Tx = 60*60*24*150
+    time_step = 100
+    Cv = 2e-7
 
-Me, Ke = create_local(Cv = Cv, Z=Z)
-GMe, GKe = create_global(Me, nodes), create_global(Ke, nodes)
-bilinear_form = (GMe) + (dt * GKe)
-
-B = boundary_conditions(bilinear_form, nodes)
-data = solve_timestep(GMe, B, U0, time_step, nodes)
-
-cdata = 1 - (data / P) 
-
-
-
-plt.plot(cdata[0, :], Z, label = f"Day 0 (Tv={time_factor:.4f})")
-plt.plot(cdata[int(2*time_step/3), :],Z, label= f"day 50 (Tv={time_factor:.4f})")
-plt.plot(cdata[int(time_step/3), :],Z, label= f"day 100 (Tv={time_factor:.4f})")
-plt.plot(cdata[(time_step-1), :],Z, label= f"day 150 (Tv={time_factor:.4f})")
-plt.legend()
-plt.xlabel("degree of consolidation")
-plt.ylabel("Depth (m)")
-plt.title("Pore Pressure vs Depth")
-plt.show()
-
-
-
+    p = Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv)
+    print(p)
