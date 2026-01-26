@@ -1,4 +1,7 @@
+~ READ ME IS OUT OF DATE REQUIRES UPDATING
 # Finite Element Methods for Geotechnical Consolidation (Pore Pressure & Settlement)
+
+
 
 ## Overview
 This repository explores numerical methods for geotechnical consolidation, focusing on:
@@ -56,4 +59,5 @@ For FEniCSx-based problems (planned), two approaches are included:
 │   ├── terzaghi_1d/      # 1D consolidation (NumPy-based, verified vs analytical)
 │   └── biot/             # planned: coupled consolidation
 ├── .devcontainer/        # optional development container setup
+
 └── README.md
