@@ -5,6 +5,22 @@ import numpy as np
 from scripts.terazaghi_1d.fea_numpy import Get_Terazaghi1D_Numpy
 import seaborn as sns
 
+import matplotlib as mpl
+
+# plotting Prameters 
+mpl.rcParams.update({
+    "figure.dpi": 120,
+    "savefig.dpi": 120,
+    "axes.grid": True,
+    "grid.alpha": 0.3,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "axes.titlesize": 14,
+    "axes.labelsize": 12,
+    "legend.frameon": False,
+    "font.size": 11,
+})
+
 # preprocessing information 
 
 
