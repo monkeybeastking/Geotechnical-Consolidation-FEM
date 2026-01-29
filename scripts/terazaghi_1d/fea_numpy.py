@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def create_local(Cv, Z):
@@ -59,13 +60,16 @@ def solve_timestep(GMe, B, U0, time_step, nodes):
             Un1 = Un1.reshape(-1, 1).T
             data = np.concatenate((data,Un1), axis=0)
     return data
-          
 
-def Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv):
+def Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv, Mv):
     nodes = num + 1
     dt = Tx / time_step
 
+    total_settlement = Mv*P*H
+
     Z = -np.linspace(0, H, num = nodes)
+    time = np.linspace(0, (Tx/(60*60*24)), time_step)
+
     U0 = P*np.ones(Z.shape, dtype=float)
 
     Me, Ke = create_local(Cv, Z)
@@ -74,6 +78,6 @@ def Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv):
 
     B = boundary_conditions(bilinear_form, nodes)
     data = solve_timestep(GMe, B, U0, time_step, nodes)
+    cdata = 1 - (data / P) 
 
-    return data
-
+    return cdata, total_settlement, Z, time 

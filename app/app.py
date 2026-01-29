@@ -22,20 +22,28 @@ with col2:
     time_step = st.number_input("time step", value=10)
     Cv = st.number_input("Cv (1e-7)", value=2)
     Cv = 1e-7 * Cv 
+    Mv = st.number_input("Mv (1e-4) (1/kPa or m^2/kN)", value=5)
+    Mv = Mv*1e-4
 
-p = Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv)
-cdata = 1 - (p / P) 
 
+
+# loading in function and formatting
+cdata, total_settlement, Z, time = Get_Terazaghi1D_Numpy(H, num, P, Tx, time_step, Cv, Mv)
 # used for plotting
-Z = -np.linspace(0, H,num+1)
-time = np.linspace(0, (Tx/(60*60*24)), time_step)
+fem_cdata = pd.DataFrame(cdata, columns = Z, index = time)
+fem_settlement = fem_cdata.mean(axis=1)*total_settlement
+
+fig, ax = plt.subplots()
+ax.plot(time, -fem_settlement, label="FEM Settlement")
+ax.set_xlabel("Time (days)")
+ax.set_ylabel("Settlement in m")
+ax.legend()
+ax.set_title("settlement over time")
 
 
 with col1:
-    if st.button("1D local degree of consolidation"): 
-        fem_cdata = pd.DataFrame(cdata, columns = Z, index = time).T
+    if st.button("1D single layer Terazaghi Settlement"): 
         st.subheader("Degree of local consolidation from FEA analysis")
-        st.write("X axis = days & Y Axis depths(m) ", fem_cdata)
-
-    if st.button("plot settlement over time"):
-        pass 
+        st.write(f"total settlement: {total_settlement} m")
+        st.write(fem_cdata.T)
+        st.pyplot(fig)
