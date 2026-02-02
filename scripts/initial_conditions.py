@@ -1,5 +1,10 @@
 import numpy as np 
 
+def initial_condition(x):
+    u = np.full(x.shape[1], load, dtype=np.float64)   # shape (npts,)
+    u[np.isclose(x[0], 0.0)] = 0.0                    # enforce u=0 at z=0
+    return u
+
 
 def Boussinesq_condition(x, load, base):
     z = np.maximum(x, 1e-12)                       # shape (npts,)
