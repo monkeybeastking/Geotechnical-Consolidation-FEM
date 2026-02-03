@@ -50,7 +50,7 @@ else:
 
 
 with col1:
-    if st.button("1D single layer Solver"): 
+    if st.button("Solve"): 
         st.subheader("FEM and analytical settlement")
         st.write(f"Total settlement (uniform): {uniform_total_settlement:.4f} m")
         spacing = H/num
