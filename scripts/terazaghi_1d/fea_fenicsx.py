@@ -126,13 +126,3 @@ def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, 
 
     return local_dcons
 
-
-H = 5
-num = 5
-T = (60*60*24) * 365# final time (days)
-time_steps = 5
-load = 100 # applied load 
-Cv = 2e-7 # m^2/s (coefficient of consolidation)
-b = 10
-
-print(Get_Terazaghi1D_FEA(H, num, load, T, time_steps, Cv, b, True))
