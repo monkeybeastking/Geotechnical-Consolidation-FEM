@@ -4,3 +4,6 @@ notes/
 
 # ignore all pyache
 **/__pycache__/
+
+
+.gitignore
