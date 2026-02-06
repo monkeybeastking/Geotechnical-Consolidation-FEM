@@ -122,7 +122,12 @@ def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, 
     b.destroy()
     solver.destroy()
 
-    local_dcons = 1 - (u_hist/ load)
+    u0 = u_hist[0, :]                 # initial condition in space
+    local_dcons = 1 - u_hist / u0[None,:]
+    local_dcons[:,0] = int(1)        # top drained node
+
+
+
 
     return local_dcons
 
