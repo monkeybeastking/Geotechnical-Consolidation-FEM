@@ -21,7 +21,7 @@ from dolfinx.fem.petsc import (
     set_bc)
 
 
-def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, Cv:float, base:float, U0=True,):
+def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, Cv:float, base:float, U0=True):
     dt = Tx / (time_steps -1)
 
         # interval mesh | MUST keep in positional arguemnts i.e. "comm", "nx"
