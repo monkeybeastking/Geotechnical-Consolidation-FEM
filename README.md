@@ -1,4 +1,4 @@
-# Finite Element Methods for One Geotechnical Consolidation 
+# Finite Element Methods for Geotechnical Consolidation (One Dimensional)
 
 Finite element solvers and verification work for geotechnical consolidation. it includes:
 - **Terzaghi 1D (single-layer)**: analytical reference + FEM (verified) + streamlit integration
@@ -33,4 +33,5 @@ Status:
 ---
 
 ## Repository structure
+
 
