@@ -21,6 +21,24 @@ from dolfinx.fem.petsc import (
     set_bc)
 
 
+# Uniform initial excess pore pressure, with drained top boundary
+def initial_condition1(x, load):
+    u = np.full(x.shape[1], load, dtype=np.float64)   # shape (npts,)
+    u[np.isclose(x[0], 0.0)] = 0.0                    # enforce u=0 at z=0
+    return u
+
+def initial_condition2(x, load, base):
+    z = np.maximum(x[0], 1e-12)                       # shape (npts,)
+    u = (2.0 * load / np.pi) * (
+        np.arctan(base / (2.0 * z)) +
+        (base * z) / (2.0 * z**2 + 0.5 * base**2)
+    )
+    u[np.isclose(z, 0.0)] = 0.0                       # optional safety at top
+    return u
+
+
+
+
 def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, Cv:float, base:float, U0=True):
     dt = Tx / (time_steps -1)
 
@@ -33,21 +51,10 @@ def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, 
 
     # Initial condition callback for fem.Function.interpolate
     if U0:
-        # Uniform initial excess pore pressure, with drained top boundary
-        def initial_condition(x):
-            u = np.full(x.shape[1], load, dtype=np.float64)   # shape (npts,)
-            u[np.isclose(x[0], 0.0)] = 0.0                    # enforce u=0 at z=0
-            return u
+        initial_condition = lambda x : initial_condition1(x, load)
     else:
-        # Example non-uniform IC (e.g., Boussinesq-ish style); uses depth z = x[0]
-        def initial_condition(x):
-            z = np.maximum(x[0], 1e-12)                       # shape (npts,)
-            u = (2.0 * load / np.pi) * (
-                np.arctan(base / (2.0 * z)) +
-                (base * z) / (2.0 * z**2 + 0.5 * base**2)
-            )
-            u[np.isclose(z, 0.0)] = 0.0                       # optional safety at top
-            return u
+        initial_condition = lambda x : initial_condition2(x, load, base)
+
 
     V = fem.functionspace(msh, ("Lagrange", 1))
 
@@ -129,5 +136,5 @@ def Get_Terazaghi1D_FEA(H:float, num:int, load:float, Tx:float, time_steps:int, 
 
 
 
-    return local_dcons
+    return local_dcons, u_hist
 

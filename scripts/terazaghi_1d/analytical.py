@@ -20,8 +20,11 @@ def terzaghi(H, Tx, time_step, nodes, Cv,n_terms):
     return Cdata, Z, T
 
 
-def Get_Terazaghi1d_Analytical(H, Tx, time_step, num, Cv, n_terms):
+def Get_Terazaghi1d_Analytical(H, num, P, Tx, time_step, Cv, n_terms):
     nodes = num + 1
     data, Z, T  = terzaghi(H, Tx, time_step, nodes, Cv,n_terms)
     cdata = 1 - data
-    return cdata, Z  
+
+    u = P*data # to get pore pressure data
+
+    return cdata, u, Z, T/(60*60*24), 
