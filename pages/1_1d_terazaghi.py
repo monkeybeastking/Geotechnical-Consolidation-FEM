@@ -75,12 +75,12 @@ st.write(
 col1, col2 = st.columns([3.5,1])
 with col2: 
     H = st.number_input("depth (m)", value=5.0)  # in meters
-    num = st.number_input("number of elements", value=10)
+    num = st.number_input("number of elements", value=100)
     nodes = num + 1
     P = st.number_input("Load applied (kN)", value=100.0) 
     Tx = st.number_input("Final time (days)", value= 365.0)
     Tx = Tx*60*60*24
-    time_step = st.number_input("time step", value=100)
+    time_step = st.number_input("time step", value=1000)
     Cv = st.number_input("Cv (1e-7)", value=2)
     Cv = 1e-7 * Cv 
     Mv = st.number_input("Mv (1e-4) (m^2/kN)", value=5)
@@ -97,7 +97,7 @@ with col2:
 uniform_total_settlement = Mv*P*H
 
 # Solving for fem and getting data pre proccesed 
-fem_cdata = Get_Terazaghi1D_FEA(H, num, P, Tx, time_step, Cv, base, initial_conditions)
+fem_cdata, fem_udata = Get_Terazaghi1D_FEA(H, num, P, Tx, time_step, Cv, base, initial_conditions)
 Z = -np.linspace(0, H, num = nodes)
 time = np.linspace(0,(Tx/(60*60*24)), num= time_step)
 fem_cdata = pd.DataFrame(fem_cdata, columns = Z, index = time)
@@ -108,7 +108,7 @@ fem_cdata = pd.DataFrame(fem_cdata, columns = Z, index = time)
 
 
 
-
+# this can be cleaned up alot by adding in settlement calculation within the fenicsx fem solver
 if initial_conditions == True:
     fem_settlement = fem_cdata.mean(axis=1)*uniform_total_settlement
 else:
@@ -117,6 +117,8 @@ else:
     total_settlement = get_settlement(Mv,spacing, initial_conditions, P)
     fem_settlement = fem_cdata.mean(axis=1)*total_settlement
 
+
+# adding again incase this has been mised from the above conditions
 spacing = H/num
 
 boussinesq_initial_conditions = Boussinesq_condition(-Z, P, base)
@@ -166,9 +168,9 @@ with col1:
         fig_cons, ax_cons = plt.subplots(figsize = (8,5))
         kx = max(1, len(time)//10)    # ~8 labels across, auto
         ky = max(1, len(Z)//10)  # ~10 labels down, auto 
-        ax_cons = sns.heatmap(fem_cdata.T,
+        ax_cons = sns.heatmap(fem_udata.T,
                             annot=False,
-                            cmap="coolwarm", 
+                            cmap="Blues", 
                             xticklabels=time,
                             yticklabels=Z)
         ax_cons.set_xticks(np.arange(0, len(time), kx) + 0.5)
@@ -179,5 +181,5 @@ with col1:
                    rotation=0)      
         ax_cons.set_xlabel("Time (Days)")
         ax_cons.set_ylabel("Depth (m)")
-        ax_cons.set_title("Local Degree of consolidation within 1D Mesh")
+        ax_cons.set_title("Excess Pore Pressure dissipation over time in a 1D Mesh")
         st.pyplot(fig_cons)
