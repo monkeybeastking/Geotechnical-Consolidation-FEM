@@ -1,6 +1,6 @@
 from pathlib import Path
 from mpi4py import MPI
-from petsc4py.PETSc import ScalarType 
+
 
 import numpy as np
 from petsc4py import PETSc
@@ -22,67 +22,27 @@ from dolfinx.fem.petsc import (
     set_bc)
 
 
-# these are made specailly for a FEniCSx Function and not to be used normally
-def Boussinesq(z):  # no input paramters required as this is only recalled under the same paramter each time
-    """
-    Boussinesq initial condition (strip load, centreline) for Terzaghi consolidation.
-    Assumptions:
-    - uniform embankment pressure q
-    - embankment width B
-    - 1D column at centreline
-    - elastic stress distribution used only for initial condition
-    """
-    z = np.maximum(z,1e-12)
-    u = (2.0 * Load / np.pi) * (np.arctan(Base / (2.0 * z)) + (Base * z) / (2.0 * z**2 + 0.5 * Base**2))
-    return u
-
-def uniform(z, Load):
-    u = np.full(z.shape[1], Load, dtype=np.float64)   # load everywhere
-    u[np.isclose(z[0], 0.0)] = 0.0                    # top boundary x=0 -> 0
+def initial_condition1(x, load):
+    u = np.full(x.shape[1], load, dtype=np.float64)  
+    u[np.isclose(x[0], 0.0)] = 0.0                    
     return u
 
 
-
-def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_steps:int, Cv: list[float], Mv: list[float], Base:float, U0=True):
-
-
-    # defining further paramters 
-    dt = T / (time_steps - 1)
-    H = max(depths)
-    z = np.linspace(0, H, num, dtype= np.float64)# kept as small and not zero to prevent error
-
-
-    def Boussinesq(z):  # no input paramters required as this is only recalled under the same paramter each time
-        """
-        Boussinesq initial condition (strip load, centreline) for Terzaghi consolidation.
-        Assumptions:
-        - uniform embankment pressure q
-        - embankment width B
-        - 1D column at centreline
-        - elastic stress distribution used only for initial condition
-        """
-        z = np.maximum(z,1e-12)
-        u = (2.0 * Load / np.pi) * (np.arctan(Base / (2.0 * z)) + (Base * z) / (2.0 * z**2 + 0.5 * Base**2))
-        return u
-
-    def uniform(z):
-        u = np.full(z.shape[1], Load, dtype=np.float64)   # load everywhere
-        u[np.isclose(z[0], 0.0)] = 0.0                    # top boundary x=0 -> 0
-        return u
-
-
-    # def mesh     
-    msh = mesh.create_interval(
-        comm=MPI.COMM_WORLD,
-        nx=num,
-        points=[0.0, H],
+def initial_condition2(x, load, base):
+    z = np.maximum(x[0], 1e-12)                       
+    u = (2.0 * load / np.pi) * (
+        np.arctan(base / (2.0 * z)) +
+        (base * z) / (2.0 * z**2 + 0.5 * base**2)
     )
+    u[np.isclose(z, 0.0)] = 0.0                       
+    return u
 
-    # defining dimensions and connectivity 
+
+def Get_Kappa(msh, z, depths, Cv):
+# defining dimensions and connectivity  
     tdim = msh.topology.dim
     msh.topology.create_connectivity(tdim, 0)
     conn = msh.topology.connectivity(tdim, 0)
-
 
     num_cells_local = msh.topology.index_map(tdim).size_local
     cell_verts = conn.array.reshape(num_cells_local, 2)
@@ -104,7 +64,6 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
     # include bottom endpoint safely in last layer
     cell_markers[midpoints >= z[-2]] = len(Cv)
 
-
     kappa = fem.Function(DG0)
 
     dofmap = DG0.dofmap
@@ -117,14 +76,41 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
         dof = dofmap.cell_dofs(cell)[0]
         kappa.x.array[dof] = Cv[lid - 1]
 
-
     # check 
     kappa.x.scatter_forward()
-
     # THIS IS FOR CHECKING IF MAKES SENSE
     # for c in range(min(10, num_cells_local)):
     #    dof = DG0.dofmap.cell_dofs(c)[0]
     #    print("cell", c, "layer", cell_markers[c], "kappa", kappa.x.array[dof])
+    return kappa 
+
+
+
+
+
+def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_steps:int, Cv: list[float], Mv: list[float], Base:float, U0=True):
+
+
+    # defining further paramters 
+    dt = T / (time_steps - 1)
+    H = max(depths)
+    z = np.linspace(0, H, num + 1, dtype= np.float64) 
+
+
+    # def mesh     
+    msh = mesh.create_interval(
+        comm=MPI.COMM_WORLD,
+        nx=num,
+        points=[0.0, H],
+    )
+
+    # Initial condition callback for fem.Function.interpolate
+    if U0:
+        initial_condition = lambda x : initial_condition1(x, Load)
+    else:
+        initial_condition = lambda x : initial_condition2(x, Load, Base)
+
+    kappa = Get_Kappa(msh, z, depths, Cv)
 
     V = fem.functionspace(msh, ("Lagrange", 1))
 
@@ -132,7 +118,7 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
     u_n = fem.Function(V)
 
     # Initial condition
-    u_n.interpolate(uniform)
+    u_n.interpolate(initial_condition)
 
     fdim = msh.topology.dim - 1
     boundary_facets = mesh.locate_entities_boundary(
@@ -149,10 +135,9 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
     # Solution functions
     u_n = fem.Function(V)
 
-    initial_condition = lambda x: Boussinesq(x[0])
 
     # Initial condition
-    u_n.interpolate(uniform)
+    u_n.interpolate(initial_condition)
 
     fdim = msh.topology.dim - 1
     boundary_facets = mesh.locate_entities_boundary(
@@ -165,7 +150,7 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
 
     uh = fem.Function(V)
     uh.name = "uh"
-    uh.interpolate(uniform)
+    uh.interpolate(initial_condition)
     # xdmf.write_function(uh,t)
 
     # varational form
@@ -219,13 +204,18 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
     u0 = u_hist[0, :]                 # initial condition in space
     local_dcons = 1 - u_hist / u0[None,:]
     local_dcons[:,0] = int(1)
-    
 
-    return local_dcons
+
+    # getting settlement
+    gfg = np.digitize(z,depths)
+    Mv = np.asarray(Mv)[gfg - 1]
+    settlement = u0 * Mv * (H / num)
+
+    return local_dcons, u_hist, settlement
 
 
 # Embankment properties
-Load = 100 # load (kPa)
+""" Load = 100 # load (kPa)
 Base = 10 # embankment width (m)
  
 num = 5
@@ -238,6 +228,6 @@ Mv = [5e-4, 10e-4, 5e-4, 5e-4]
 T = (60*60*24) * 365 # final time (days)
 time_steps = 10
 
-fem_cdata = Get_Terazaghi1dMultilayer_FEA(depths, num, Load, T, time_steps, Cv,Mv, Base = 10, U0=True)
+fem_cdata, fem_udata, settlement = Get_Terazaghi1dMultilayer_FEA(depths, num, Load, T, time_steps, Cv,Mv, Base = 10)
 
-print(fem_cdata)
+print(fem_cdata, fem_udata, settlement ) """

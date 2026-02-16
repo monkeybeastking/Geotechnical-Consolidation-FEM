@@ -21,19 +21,18 @@ from dolfinx.fem.petsc import (
     set_bc)
 
 
-# Uniform initial excess pore pressure, with drained top boundary
 def initial_condition1(x, load):
-    u = np.full(x.shape[1], load, dtype=np.float64)   # shape (npts,)
-    u[np.isclose(x[0], 0.0)] = 0.0                    # enforce u=0 at z=0
+    u = np.full(x.shape[1], load, dtype=np.float64)  
+    u[np.isclose(x[0], 0.0)] = 0.0                    
     return u
 
 def initial_condition2(x, load, base):
-    z = np.maximum(x[0], 1e-12)                       # shape (npts,)
+    z = np.maximum(x[0], 1e-12)                       
     u = (2.0 * load / np.pi) * (
         np.arctan(base / (2.0 * z)) +
         (base * z) / (2.0 * z**2 + 0.5 * base**2)
     )
-    u[np.isclose(z, 0.0)] = 0.0                       # optional safety at top
+    u[np.isclose(z, 0.0)] = 0.0                       
     return u
 
 

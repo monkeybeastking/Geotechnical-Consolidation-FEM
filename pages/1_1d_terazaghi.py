@@ -77,7 +77,7 @@ with col2:
     H = st.number_input("depth (m)", value=5.0)  # in meters
     num = st.number_input("number of elements", value=100)
     nodes = num + 1
-    P = st.number_input("Load applied (kN)", value=100.0) 
+    P = st.number_input("Load applied (kPa)", value=100.0) 
     Tx = st.number_input("Final time (days)", value= 365.0)
     Tx = Tx*60*60*24
     time_step = st.number_input("time step", value=1000)
