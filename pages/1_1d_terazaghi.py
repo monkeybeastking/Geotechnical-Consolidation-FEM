@@ -48,26 +48,8 @@ st.subheader("Single-layer consolidation (Finite Element Analysis)")
 st.write(
     "This dashboard solves 1D Terzaghi consolidation using the finite element method (FEM). "
     " Choose the parameter and numerical settings, then click **Solve** to compute excess pore pressure"
-    " dissipation, local degree of consolidation and settlement over time. The initial excess pore pressure can be set to uniform "
+    " dissipation over and settlement over time. The initial excess pore pressure can be set to uniform "
     " (constant with depth) or a non-uniform (Boussinesq).")
-
-st.subheader("Assumptions and scope")
-st.write(
-    "- 1D vertical consolidation only (variables vary with depth *$z$*; no lateral drainage or 3D effects, this is a 1d consolidation settlement model).\n"
-    "- Soil is fully saturated and consolidation is governed by Darcy flow and compressibility of soil skeleton.\n"
-    "- Single homogeneous layer with constant parameters over depth.\n"
-    "- Loading is represented through the initial excess pore pressure profile at $t=0$ (uniform or non-uniform).\n"
-    "- Boundary conditions represent drainage at the surface only and a impermeable base.")
-
-st.subheader("Limitations")
-st.write(
-    "- This is an 1D model: it ignores radial/3D drainage, stress redistribution, and stress-dependent soil properties.\n"
-    "- Secondary compression (creep) and immediate and other non-Terzaghi behaviours are not included.\n"
-    "- Results aresensitive to numerical choices:\n"
-    "  - early times produce **steep pore pressure gradients at and near the drained boundary,\n"
-    "  - coarse meshes or large time steps can smooth gradients or create early-time error.\n"
-    "- The Boussinesq option here is a 1D non-uniform initial condition, not a full 3D Boussinesq consolidation analysis."
-)
 
 
 
@@ -147,7 +129,7 @@ with col1:
         # plotting end settlement 
         st.subheader("Settlement response (FEM)")
         st.write("Settlement is computed from the FEM pore pressure and plotted" \
-        " over the selected time for given minitial condition.")
+        " over the selected time for given initial condition.")
         fig_settl, ax = plt.subplots(figsize = (8,5))
         ax.set_ylim(-np.max(uniform_total_settlement),0)
         ax.plot(time, -fem_settlement, label="FEM Settlement")
@@ -162,9 +144,8 @@ with col1:
 
 
         # plotting local degree of consolidation heat map
-        st.subheader("Local degree of consolidation (depth–time map)")
-        st.write("Heatmap of local consolidation response through time and depth, based" \
-        " on the normalised excess pore pressure, within the 1D mesh.")
+        st.subheader("Excess Pore pressure dissipation (depth time map)")
+        st.write("Heatmap of Pore pressure dissipation through time and depth")
         fig_cons, ax_cons = plt.subplots(figsize = (8,5))
         kx = max(1, len(time)//10)    # ~8 labels across, auto
         ky = max(1, len(Z)//10)  # ~10 labels down, auto 
