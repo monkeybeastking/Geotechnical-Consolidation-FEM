@@ -207,8 +207,8 @@ def Get_Terazaghi1dMultilayer_FEA(depths, num:float, Load:float, T:float, time_s
 
 
     # getting settlement
-    gfg = np.digitize(z,depths)
-    Mv = np.asarray(Mv)[gfg - 1]
+    gfg = np.digitize(z,depths, right=True)
+    Mv = np.asarray(Mv)[gfg]
     settlement = u0 * Mv * (H / num)
 
     return local_dcons, u_hist, settlement
